@@ -6,7 +6,8 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
 using android.graphics;
-
+using android.opengl;
+using android.content;
 
 namespace com.koushikdutta.sensoryoverload
 {
@@ -36,7 +37,7 @@ namespace com.koushikdutta.sensoryoverload
             get { return myHeight; }
         }
 
-        unsafe public static Texture LoadResource(string resourceName)
+        unsafe public static Texture LoadResource(Context context, int resource)
         {
             Texture ret = new Texture();
 
@@ -47,13 +48,22 @@ namespace com.koushikdutta.sensoryoverload
             gl.BindTexture(gl.GL_TEXTURE_2D, ret.myName);
 
 			// do stuff to load it
-			
+			var inputStream = context.getResources().openRawResource(resource);
+            try
+            {
+                var bitmap = BitmapFactory.decodeStream(inputStream);
+                ret.myWidth = bitmap.Width;
+                ret.myHeight = bitmap.Height;
+                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+                Console.WriteLine(gl.GetError());
+            }
+            finally
+            {
+                inputStream.close();
+            }
 
             gl.TexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR);
             gl.TexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR);
-
-            ret.myWidth = 0;//size.Width;
-            ret.myHeight = 0;//size.Height;
 
             ret.myPositionCoords = new float[] 
             { 

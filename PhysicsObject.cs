@@ -2,7 +2,7 @@
 {
     struct PhysicsObject
     {
-        public Vector3f Location;
-        public Vector3f Velocity;
+        public Vector4f Location;
+        public Vector4f Velocity;
     }
 }

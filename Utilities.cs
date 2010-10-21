@@ -8,18 +8,18 @@ namespace com.koushikdutta.sensoryoverload
 {
     static class Utilities
     {
-        public static void GenerateSphere(float radius, int subdivisions, out Vector3f[] outPoints, out Vector3f[] outNormals, out short[] outIndices)
+        public static void GenerateSphere(float radius, int subdivisions, out Vector4f[] outPoints, out Vector4f[] outNormals, out short[] outIndices)
         {
             // starting with a octahedron, subdivide the surfaces
 
-            List<Vector3f> points = new List<Vector3f>(new Vector3f[]
+            List<Vector4f> points = new List<Vector4f>(new Vector4f[]
             {
-                new Vector3f(1, 0, 0),
-                new Vector3f(0, 1, 0),
-                new Vector3f(0, 0, 1),
-                new Vector3f(0, -1 ,0),
-                new Vector3f(-1, 0, 0),
-                new Vector3f(0, 0, -1),
+                new Vector4f(1, 0, 0, 1),
+                new Vector4f(0, 1, 0, 1),
+                new Vector4f(0, 0, 1, 1),
+                new Vector4f(0, -1 ,0, 1),
+                new Vector4f(-1, 0, 0, 1),
+                new Vector4f(0, 0, -1, 1),
             }
             );
             List<short> indices = new List<short>(new short[]
@@ -40,9 +40,9 @@ namespace com.koushikdutta.sensoryoverload
                 List<short> newIndices = new List<short>();
                 for (int j = 0; j < indices.Count; j += 3)
                 {
-                    Vector3f np3 = points[indices[j]] + points[indices[j + 1]];
-                    Vector3f np4 = points[indices[j + 1]] + points[indices[j + 2]];
-                    Vector3f np5 = points[indices[j]] + points[indices[j + 2]];
+                    Vector4f np3 = points[indices[j]] + points[indices[j + 1]];
+                    Vector4f np4 = points[indices[j + 1]] + points[indices[j + 2]];
+                    Vector4f np5 = points[indices[j]] + points[indices[j + 2]];
 
                     np3 = np3.Normalize();
                     np4 = np4.Normalize();
@@ -80,7 +80,7 @@ namespace com.koushikdutta.sensoryoverload
             outPoints = points.ToArray();
             outIndices = indices.ToArray();
 
-            List<Vector3f> normals = new List<Vector3f>();
+            List<Vector4f> normals = new List<Vector4f>();
             for (int i = 0; i < outIndices.Length; i++)
             {
                 normals.Add(outPoints[outIndices[i]].Normalize());
@@ -94,9 +94,9 @@ namespace com.koushikdutta.sensoryoverload
         }
 
         public static Random Random = new Random();
-        public static Vector3f RandomVector3f()
+        public static Vector4f RandomVector4f()
         {
-            Vector3f ret = new Vector3f();
+            Vector4f ret = new Vector4f();
             ret.X = Random.Next(255) - 127;
             ret.Y = Random.Next(255) - 127;
             ret.Z = Random.Next(255) - 127;

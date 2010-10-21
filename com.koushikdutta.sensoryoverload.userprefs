@@ -1,0 +1,33 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="MainActivity.cs">
+    <Files>
+      <File FileName="../androidmono/jni/MonoJavaBridge/JavaBridge/JavaBridge.cs" Line="248" Column="18" />
+      <File FileName="MainActivity.cs" Line="518" Column="34" />
+      <File FileName="Android/AndroidManifest.xml" Line="10" Column="90" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="com.koushikdutta.sensoryoverload" expanded="True" selected="True">
+            <Node name="Android" expanded="True">
+              <Node name="src" expanded="True">
+                <Node name="com" expanded="True">
+                  <Node name="koushikdutta" expanded="True">
+                    <Node name="sensoryoverload" expanded="True" />
+                  </Node>
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/koush/src/SensoryOverload/MainActivity.cs" line="517" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

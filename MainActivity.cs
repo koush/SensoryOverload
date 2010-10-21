@@ -7,10 +7,11 @@ using android.opengl;
 using android.view;
 using OpenGLES;
 using System.Collections.Generic;
+using android.hardware;
 
 namespace com.koushikdutta.sensoryoverload
 {
-	unsafe public class MainActivity : Activity, GLSurfaceView.Renderer
+	unsafe public class MainActivity : Activity, GLSurfaceView.Renderer, SensorEventListener
 	{
 		int myWidth; 
 		int myHeight;
@@ -18,8 +19,9 @@ namespace com.koushikdutta.sensoryoverload
 		// this is how long the user is given to get away from a brand new asteroid
         const int AsteroidGracePeriod = 5000;
 
-        readonly Vector3f myBulletLight = new Vector3f(1, .5f, 0);
-        readonly float myBulletDuration = 1f;        int myLastSpray = 0;
+        readonly Vector4f myBulletLight = new Vector4f(1, .5f, 0, 1);
+        readonly float myBulletDuration = 1f;
+        int myLastSpray = 0;
         const int SprayCooldown = 5000;
         int myLastBullet = System.Environment.TickCount;
 		int myLastRender = System.Environment.TickCount;
@@ -34,8 +36,8 @@ namespace com.koushikdutta.sensoryoverload
         struct AsteroidMesh
         {
             public short[] SphereIndices;
-            public Vector3f[] SpherePoints;
-            public Vector3f[] SphereNormals;
+            public Vector4f[] SpherePoints;
+            public Vector4f[] SphereNormals;
         }
         AsteroidMesh[] myAsteroidMeshes = new AsteroidMesh[4];
 
@@ -56,7 +58,7 @@ namespace com.koushikdutta.sensoryoverload
                 value -= max;
         }
 
-        PhysicsObject ApplyPhysics(PhysicsObject po, Vector3f acceleration, float elapsedTime, bool rollOver)
+        PhysicsObject ApplyPhysics(PhysicsObject po, Vector4f acceleration, float elapsedTime, bool rollOver)
         {
             // update the position and velocity of the object
             po.Location += po.Velocity.Scale(elapsedTime);
@@ -83,16 +85,17 @@ namespace com.koushikdutta.sensoryoverload
             gl.Translatef(po.Location.X, po.Location.Y, po.Location.Z);
         }
 
-        Vector3f GetShipVelocityVector()
+        Vector4f myShipVelocity;
+        Vector4f GetShipVelocityVector()
         {
-			return Vector3f.Zero;
+            return myShipVelocity;
 			/*
             if (myGSensor == null)
-                return Vector3f.Zero;
+                return Vector4f.Zero;
 
             // return the velocity vector of the ship from the G-Sensor
             GVector gv = myGSensor.GetGVector().Scale(50f);
-            Vector3f ret = new Vector3f();
+            Vector4f ret = new Vector4f();
             ret.X = (float)gv.X;
             ret.Y = (float)-gv.Y;
             ret.Z = 0;
@@ -114,6 +117,24 @@ namespace com.koushikdutta.sensoryoverload
             // calculate the screen depth. this may change when the screen is resized/rotated
             float sceneDepth = -(float)(myWidth / Math.Sin(45d / 180d * Math.PI));
 
+            gl.MatrixMode(gl.GL_PROJECTION);
+            gl.LoadIdentity();
+
+            float[] ambientLight = new float[] { .5f, .5f, .5f, 1 };
+            float[] diffuseLight = new float[] { 1f, 1f, 1f, 1 };
+            float[] lightPosition = new float[] { 0, 0, 1, 0 };
+            fixed (float* ap = ambientLight, dp = diffuseLight, pp = lightPosition)
+            {
+                gl.Enable(gl.GL_LIGHT1);
+                gl.Lightfv(gl.GL_LIGHT1, gl.GL_AMBIENT, ap);
+                gl.Lightfv(gl.GL_LIGHT1, gl.GL_DIFFUSE, dp);
+                gl.Lightfv(gl.GL_LIGHT1, gl.GL_POSITION, pp);
+                gl.Disable(gl.GL_LIGHT0);
+                //gl.Enable(gl.GL_LIGHT2);
+            }
+
+            gluPerspective(45, (float)myWidth / (float)myHeight, -sceneDepth - 150, -sceneDepth + 150);
+
             // reset the model matrix
             gl.MatrixMode(gl.GL_MODELVIEW);
             gl.LoadIdentity();
@@ -125,7 +146,7 @@ namespace com.koushikdutta.sensoryoverload
                 bulletLightIntensity = 0;
             else
                 bulletLightIntensity = 1 - (bulletLightIntensity / myBulletDuration);
-            Vector3f bulletLight = myBulletLight.Scale(bulletLightIntensity);
+            Vector4f bulletLight = myBulletLight.Scale(bulletLightIntensity);
             float[] lightArgs = new float[] { bulletLight.X, bulletLight.Y, bulletLight.Z, 1 };
             float[] posArgs = new float[] { myShip.Location.X, myShip.Location.Y, sceneDepth, 1 };
             // set the light
@@ -151,6 +172,21 @@ namespace com.koushikdutta.sensoryoverload
             ProcessAsteroids(elapsedTime, sceneDepth);
             gl.Disable(gl.GL_DEPTH_TEST);
             gl.Disable(gl.GL_BLEND);
+        }
+
+        public override bool onKeyDown(int arg0, KeyEvent arg1)
+        {
+            if (arg0 == KeyEvent.KEYCODE_DPAD_LEFT || arg0 == KeyEvent.KEYCODE_DPAD_RIGHT || arg0 == KeyEvent.KEYCODE_DPAD_UP || arg0 == KeyEvent.KEYCODE_DPAD_DOWN)
+            {
+                FireBullet();
+                return true;
+            }
+            if (arg0 == KeyEvent.KEYCODE_DPAD_CENTER)
+            {
+                FireSpray();
+                return true;
+            }
+            return base.onKeyDown(arg0, arg1);
         }
 
         void ProcessShip(float elapsedTime, float sceneDepth)
@@ -179,14 +215,14 @@ namespace com.koushikdutta.sensoryoverload
                 myShipRotation -= 360;
 
             // move the ship
-            myShip = ApplyPhysics(myShip, Vector3f.Zero, elapsedTime, true);
+            myShip = ApplyPhysics(myShip, Vector4f.Zero, elapsedTime, true);
             gl.PushMatrix();
             myShip.Location.Z = sceneDepth;
             TranslateToObjectSpace(myShip);
             if (!float.IsNaN(myShipRotation))
                 gl.Rotatef(myShipRotation, 0, 0, 1);
             // draw the ship
-            //myShipTexture.DrawCenteredSprite();
+            myShipTexture.DrawCenteredSprite();
             gl.PopMatrix();
         }
 
@@ -197,7 +233,7 @@ namespace com.koushikdutta.sensoryoverload
             {
                 PhysicsObject bullet = myBullets[i];
                 // move the bullet
-                bullet = ApplyPhysics(bullet, Vector3f.Zero, elapsedTime, false);
+                bullet = ApplyPhysics(bullet, Vector4f.Zero, elapsedTime, false);
                 bullet.Location.Z = sceneDepth;
                 float angle = ZRotationFromVector(bullet.Velocity);
 
@@ -224,7 +260,7 @@ namespace com.koushikdutta.sensoryoverload
             {
                 Asteroid asteroid = myAsteroids[i];
                 // move the asteroid
-                asteroid.PhysicsObject = ApplyPhysics(asteroid.PhysicsObject, Vector3f.Zero, elapsedTime, true);
+                asteroid.PhysicsObject = ApplyPhysics(asteroid.PhysicsObject, Vector4f.Zero, elapsedTime, true);
                 asteroid.PhysicsObject.Location.Z = sceneDepth;
                 // this is the asteroid spin
                 asteroid.Rotation += asteroid.RotationSpeed;
@@ -244,13 +280,13 @@ namespace com.koushikdutta.sensoryoverload
                 TranslateToObjectSpace(asteroid.PhysicsObject);
                 gl.Rotatef(asteroid.Rotation, asteroid.RotationVector.X, asteroid.RotationVector.Y, asteroid.RotationVector.Z);
 
-                fixed (Vector3f* vp = myAsteroidMeshes[asteroid.Size].SpherePoints, np = myAsteroidMeshes[asteroid.Size].SphereNormals)
+                fixed (Vector4f* vp = myAsteroidMeshes[asteroid.Size].SpherePoints, np = myAsteroidMeshes[asteroid.Size].SphereNormals)
                 {
                     fixed (short* ip = myAsteroidMeshes[asteroid.Size].SphereIndices)
                     {
                         fixed (float* cp = color)
                         {
-                            gl.VertexPointer(3, gl.GL_FLOAT, 0, (IntPtr)vp);
+                            gl.VertexPointer(4, gl.GL_FLOAT, 0, (IntPtr)vp);
                             gl.NormalPointer(gl.GL_FLOAT, 0, (IntPtr)np);
                             gl.Materialfv(gl.GL_FRONT_AND_BACK, gl.GL_AMBIENT_AND_DIFFUSE, cp);
                             
@@ -278,9 +314,9 @@ namespace com.koushikdutta.sensoryoverload
         }
 
         // get the z axis rotation amount for a 2d vector
-        float ZRotationFromVector(Vector3f v)
+        float ZRotationFromVector(Vector4f v)
         {
-            float angle = (float)(Math.Acos(v.Normalize().DotProduct(new Vector3f(1, 0, 0))) / Math.PI * 180f);
+            float angle = (float)(Math.Acos(v.Normalize().DotProduct(new Vector4f(1, 0, 0, 1))) / Math.PI * 180f);
             if (v.Y < 0)
                 angle = 360 - angle;
             return angle;
@@ -305,11 +341,11 @@ namespace com.koushikdutta.sensoryoverload
             newAsteroid.RealColor.X = Math.Abs(Utilities.RandomNormalizedFloat());
             newAsteroid.RealColor.Y = Math.Abs(Utilities.RandomNormalizedFloat());
             newAsteroid.RealColor.Z = Math.Abs(Utilities.RandomNormalizedFloat());
-            newAsteroid.RotationVector = Utilities.RandomVector3f();
+            newAsteroid.RotationVector = Utilities.RandomVector4f();
             newAsteroid.RotationSpeed = Utilities.RandomNormalizedFloat() * 10;
-            newAsteroid.PhysicsObject.Location = Utilities.RandomVector3f();
+            newAsteroid.PhysicsObject.Location = Utilities.RandomVector4f();
 			newAsteroid.PhysicsObject.Location.Z = 0;
-            newAsteroid.PhysicsObject.Velocity = Utilities.RandomVector3f().Scale(50);
+            newAsteroid.PhysicsObject.Velocity = Utilities.RandomVector4f().Scale(50);
             newAsteroid.PhysicsObject.Velocity.Z = (float)Math.Abs(newAsteroid.PhysicsObject.Velocity.Z);
             newAsteroid.CreationTime = System.Environment.TickCount;
             newAsteroid.Size = 3;
@@ -324,8 +360,8 @@ namespace com.koushikdutta.sensoryoverload
             myAsteroids.Add(CreateAsteroid());
             myAsteroids.Add(CreateAsteroid());
             myAsteroids.Add(CreateAsteroid());
-            myShip.Location = Vector3f.Zero;
-            myShip.Velocity = Vector3f.Zero;
+            myShip.Location = Vector4f.Zero;
+            myShip.Velocity = Vector4f.Zero;
         }
 		
 		protected override void onCreate (Bundle arg0)
@@ -339,9 +375,11 @@ namespace com.koushikdutta.sensoryoverload
             }
 			
 			var surfaceView = new GLSurfaceView(this);
-			surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 			surfaceView.setRenderer(this);
 			setContentView(surfaceView);
+
+            var sm = getSystemService(SENSOR_SERVICE) as SensorManager;
+            sm.registerListener(this, sm.getSensorList(SensorManager.SENSOR_ACCELEROMETER).@get(0) as Sensor, SensorManager.SENSOR_DELAY_GAME);
 		}
 
 		// This constructor is a requirement for all CLR classes that inherit from java.lang.Object
@@ -351,6 +389,10 @@ namespace com.koushikdutta.sensoryoverload
 
 		public void onSurfaceCreated (javax.microedition.khronos.opengles.GL10 arg0, javax.microedition.khronos.egl.EGLConfig arg1)
 		{
+            //gl.Enable(gl.GL_COLOR_MATERIAL);
+            //gl.Enable(gl.GL_CULL_FACE);
+            //gl.CullFace(gl.GL_BACK);
+            gl.Disable(gl.GL_CULL_FACE);
             gl.ClearColor(0, 0, 0, 1);
             gl.ShadeModel(gl.GL_SMOOTH);
             gl.ClearDepthf(1.0f);
@@ -361,20 +403,11 @@ namespace com.koushikdutta.sensoryoverload
             gl.MatrixMode(gl.GL_MODELVIEW);
             gl.LoadIdentity();
 
-            float[] ambientLight = new float[] { .5f, .5f, .5f, 1 };
-            float[] diffuseLight = new float[] { .5f, .5f, .5f, 1 };
-            float[] lightPosition = new float[] { 0, 0, 1, 0 };
-            fixed (float* ap = ambientLight, dp = diffuseLight, pp = lightPosition)
-            {
-                gl.Lightfv(gl.GL_LIGHT1, gl.GL_AMBIENT, ap);
-                gl.Lightfv(gl.GL_LIGHT1, gl.GL_DIFFUSE, dp);
-                gl.Lightfv(gl.GL_LIGHT1, gl.GL_POSITION, pp);
-                gl.Enable(gl.GL_LIGHT1);
-				gl.Disable(gl.GL_LIGHT0);
-                //gl.Enable(gl.GL_LIGHT2);
-            }
             gl.Enable(gl.GL_LIGHTING);
-		}
+
+            myShipTexture = Texture.LoadResource(this, R.drawable.ship);
+            myBulletTexture = Texture.LoadResource(this, R.drawable.bullet);
+    	}
 
 		public void onSurfaceChanged (javax.microedition.khronos.opengles.GL10 arg0, int w, int h)
 		{
@@ -420,7 +453,7 @@ namespace com.koushikdutta.sensoryoverload
                 for (int bi = 0; bi < myBullets.Count; bi++)
                 {
                     PhysicsObject bullet = myBullets[bi];
-                    Vector3f v = bullet.Location - asteroid.PhysicsObject.Location;
+                    Vector4f v = bullet.Location - asteroid.PhysicsObject.Location;
                     if (v.LengthSquare < asteroidRadiusSquare)
                     {
                         // remove the asteroid and bullet
@@ -444,7 +477,7 @@ namespace com.koushikdutta.sensoryoverload
                 }
 
                 // see if the asteroid is hitting the ship
-                Vector3f sv = myShip.Location - asteroid.PhysicsObject.Location;
+                Vector4f sv = myShip.Location - asteroid.PhysicsObject.Location;
                 if (sv.LengthSquare < asteroidRadiusSquare && System.Environment.TickCount - asteroid.CreationTime > AsteroidGracePeriod)
                     gameOver = true;
 
@@ -478,6 +511,17 @@ namespace com.koushikdutta.sensoryoverload
             }
         }
 
+        public void onSensorChanged(SensorEvent arg0)
+        {
+            myShipVelocity.X = arg0.values[0];
+            myShipVelocity.Y = arg0.values[1];
+            myShipVelocity.Z = 0;
+            myShipVelocity = myShipVelocity.Normalize().Scale(200f);
+        }
+
+        public void onAccuracyChanged(Sensor arg0, int arg1)
+        {
+        }
 	}
 }   
 

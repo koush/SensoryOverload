@@ -12,7 +12,9 @@ public static class R {
     public static class attr {
     }
     public static class drawable {
-        public static readonly int icon=0x7f020000;
+        public static readonly int bullet=0x7f020000;
+        public static readonly int icon=0x7f020001;
+        public static readonly int ship=0x7f020002;
     }
     public static class string_ {
         public static readonly int app_name=0x7f030000;

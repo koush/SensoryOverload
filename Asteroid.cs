@@ -10,11 +10,11 @@ namespace com.koushikdutta.sensoryoverload
     struct Asteroid
     {
         public PhysicsObject PhysicsObject;
-        public Vector3f RotationVector;
+        public Vector4f RotationVector;
         public float Rotation;
         public float RotationSpeed;
         public int CreationTime;
         public int Size;
-        public Vector3f RealColor;
+        public Vector4f RealColor;
     }
 }

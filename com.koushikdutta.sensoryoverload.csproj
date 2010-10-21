@@ -57,17 +57,19 @@
     <None Include="Android\res\drawable\icon.png" />
     <None Include="Android\src\com\koushikdutta\sensoryoverload\MonoActivity.java" />
     <None Include="Android\src\com\koushikdutta\sensoryoverload\MainActivity.java" />
+    <None Include="Android\res\drawable\ship.png" />
+    <None Include="Android\res\drawable\bullet.png" />
   </ItemGroup>
   <ItemGroup>
-  <Compile Include="Asteroid.cs" />
-  <Compile Include="Texture.cs" />
-  <Compile Include="PhysicsObject.cs" />
-  <Compile Include="Vector3f.cs" />
-  <Compile Include="Utilities.cs" />
-  <Compile Include="gl.cs" />
+    <Compile Include="Asteroid.cs" />
+    <Compile Include="Texture.cs" />
+    <Compile Include="PhysicsObject.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="gl.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="R.cs" />
+    <Compile Include="Vector4f.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
