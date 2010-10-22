@@ -55,7 +55,6 @@ namespace com.koushikdutta.sensoryoverload
                 ret.myWidth = bitmap.Width;
                 ret.myHeight = bitmap.Height;
                 GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-                Console.WriteLine(gl.GetError());
             }
             finally
             {

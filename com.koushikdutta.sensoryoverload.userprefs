@@ -2,8 +2,7 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="MainActivity.cs">
     <Files>
-      <File FileName="../androidmono/jni/MonoJavaBridge/JavaBridge/JavaBridge.cs" Line="248" Column="18" />
-      <File FileName="MainActivity.cs" Line="518" Column="34" />
+      <File FileName="MainActivity.cs" Line="387" Column="1" />
       <File FileName="Android/AndroidManifest.xml" Line="10" Column="90" />
     </Files>
     <Pads>
@@ -25,9 +24,7 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/koush/src/SensoryOverload/MainActivity.cs" line="517" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

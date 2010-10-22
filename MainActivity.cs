@@ -8,6 +8,8 @@ using android.view;
 using OpenGLES;
 using System.Collections.Generic;
 using android.hardware;
+using java.lang;
+using Math = System.Math;
 
 namespace com.koushikdutta.sensoryoverload
 {
@@ -379,7 +381,16 @@ namespace com.koushikdutta.sensoryoverload
 			setContentView(surfaceView);
 
             var sm = getSystemService(SENSOR_SERVICE) as SensorManager;
-            sm.registerListener(this, sm.getSensorList(SensorManager.SENSOR_ACCELEROMETER).@get(0) as Sensor, SensorManager.SENSOR_DELAY_GAME);
+            sm.registerListener(this, sm.getSensorList(SensorManager.SENSOR_ORIENTATION).@get(0) as Sensor, SensorManager.SENSOR_DELAY_GAME);
+            
+            java.util.ArrayList ar = new java.util.ArrayList();
+            ar.@add((java.lang.String)"shitfuck");
+            ar.@add((java.lang.String)"shitfuck2");
+            ar.@add((java.lang.String)"shitfuck3");
+            foreach (java.lang.String f in ar)
+            {
+                Console.WriteLine(f);
+            }
 		}
 
 		// This constructor is a requirement for all CLR classes that inherit from java.lang.Object
@@ -513,8 +524,8 @@ namespace com.koushikdutta.sensoryoverload
 
         public void onSensorChanged(SensorEvent arg0)
         {
-            myShipVelocity.X = arg0.values[0];
-            myShipVelocity.Y = arg0.values[1];
+            myShipVelocity.X = -arg0.values[0];
+            myShipVelocity.Y = -arg0.values[1];
             myShipVelocity.Z = 0;
             myShipVelocity = myShipVelocity.Normalize().Scale(200f);
         }
