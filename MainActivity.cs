@@ -382,15 +382,6 @@ namespace com.koushikdutta.sensoryoverload
 
             var sm = getSystemService(SENSOR_SERVICE) as SensorManager;
             sm.registerListener(this, sm.getSensorList(SensorManager.SENSOR_ORIENTATION).@get(0) as Sensor, SensorManager.SENSOR_DELAY_GAME);
-            
-            java.util.ArrayList ar = new java.util.ArrayList();
-            ar.@add((java.lang.String)"shitfuck");
-            ar.@add((java.lang.String)"shitfuck2");
-            ar.@add((java.lang.String)"shitfuck3");
-            foreach (java.lang.String f in ar)
-            {
-                Console.WriteLine(f);
-            }
 		}
 
 		// This constructor is a requirement for all CLR classes that inherit from java.lang.Object
