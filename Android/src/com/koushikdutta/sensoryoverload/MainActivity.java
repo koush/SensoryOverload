@@ -33,12 +33,20 @@ public class MainActivity extends android.app.Activity implements MonoProxy, and
 	public native void onAccuracyChanged(android.hardware.Sensor arg0,int arg1);
 
 
-	long myGcHandle;
-	public long getGCHandle() {
-		return myGcHandle;
-	}
 
-	public void setGCHandle(long gcHandle) {
-		myGcHandle = gcHandle;
-	}
+	long myGCHandle;
+	public long getGCHandle() {{
+		return myGCHandle;
+	}}
+
+	public void setGCHandle(long gcHandle) {{
+		myGCHandle = gcHandle;
+	}}
+
+	@Override
+	protected void finalize() throws Throwable {{
+	    super.finalize();
+	    MonoBridge.releaseGCHandle(myGCHandle);
+	}}
+
 }

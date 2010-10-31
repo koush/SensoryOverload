@@ -15,6 +15,7 @@ namespace com.koushikdutta.sensoryoverload
 {
 	unsafe public class MainActivity : Activity, GLSurfaceView.Renderer, SensorEventListener
 	{
+        Handler mHandler = new Handler();
 		int myWidth; 
 		int myHeight;
 		
@@ -500,18 +501,24 @@ namespace com.koushikdutta.sensoryoverload
             // show the gamer over form if the ship exploded
             if (gameOver)
             {
-				/*
-                if (MessageBox.Show("Game Over! Try again?", "Sensory Overload", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                if (!mIsDialogShowing)
                 {
-                    ResetGame();
+                    mIsDialogShowing = true;
+                    mHandler.post(() =>
+                    {
+                        var b = new AlertDialog.Builder(this);
+                        b.setTitle("Game Over!");
+                        b.setMessage("Try again?");
+                        b.setPositiveButton(global::android.R.@string.yes, (d, which) => { mIsDialogShowing = false; ResetGame(); });
+                        b.setNegativeButton(global::android.R.@string.no, (d, which) => { mIsDialogShowing = false; finish(); });
+                        b.setCancelable(false);
+                        b.create().show();
+                    });
                 }
-                else
-                {
-                    Close();
-                }
-                */
             }
         }
+
+        bool mIsDialogShowing = false;
 
         public void onSensorChanged(SensorEvent arg0)
         {
