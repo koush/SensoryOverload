@@ -1,10 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="../../Projects/com.koushikdutta.helloworld/com.koushikdutta.helloworld/MainActivity.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="gl.cs">
     <Files>
-      <File FileName="../../Projects/com.koushikdutta.helloworld/com.koushikdutta.helloworld/MainActivity.cs" Line="39" Column="43" />
-      <File FileName="MainActivity.cs" Line="377" Column="14" />
+      <File FileName="../../Projects/com.koushikdutta.helloworld/com.koushikdutta.helloworld/MainActivity.cs" Line="39" Column="44" />
+      <File FileName="MainActivity.cs" Line="1" Column="1" />
       <File FileName="Android/AndroidManifest.xml" Line="1" Column="1" />
+      <File FileName="Android/src/com/koushikdutta/sensoryoverload/MonoActivity.java" Line="1" Column="1" />
+      <File FileName="gl.cs" Line="368" Column="29" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -20,7 +22,7 @@
                 </Node>
               </Node>
             </Node>
-            <Node name="MainActivity.cs" selected="True" />
+            <Node name="gl.cs" selected="True" />
           </Node>
         </State>
       </Pad>

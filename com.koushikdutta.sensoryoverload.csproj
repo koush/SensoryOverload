@@ -10,7 +10,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>com.koushikdutta.sensoryoverload</RootNamespace>
     <AssemblyName>com.koushikdutta.sensoryoverload</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,10 +36,10 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="MonoJavaBridge, Version=1.0.0.0, Culture=neutral">
+    <Reference Include="android, Version=1.0.0.0, Culture=neutral">
       <Package>android</Package>
     </Reference>
-    <Reference Include="android, Version=1.0.0.0, Culture=neutral">
+    <Reference Include="MonoJavaBridge, Version=1.0.0.0, Culture=neutral">
       <Package>android</Package>
     </Reference>
   </ItemGroup>
